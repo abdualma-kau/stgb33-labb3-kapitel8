@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Stegvis R-labb i Kutners kapitel 8: polynomial regression, interaction terms och indicator variables."><link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%23092235%27/%3E%3Cpath d=%27M14 46V18h7l11 15 11-15h7v28h-8V30L32 43 22 30v16z%27 fill=%27%2313b8a6%27/%3E%3C/svg%3E">
+<title>STGB33 | Labb 3: Kapitel 8</title>
+<style>
+:root{--ink:#092235;--teal:#13b8a6;--teal2:#0a8e82;--paper:#f7f4ed;--card:#fff;--muted:#587383;--line:#d8e4e4;--warm:#fff4e3;--code:#0b273a;--soft:#eaf5f3;--ok:#eaf7ed;--blue:#edf4fb}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:var(--paper);font:16px/1.55 Aptos,Arial,sans-serif}header{background:var(--ink);color:#fff;padding:18px max(24px,calc((100vw - 1120px)/2));display:flex;justify-content:space-between;gap:16px;font-weight:800}main,footer{max-width:1120px;margin:auto;padding-left:24px;padding-right:24px}main{padding-top:48px;padding-bottom:76px}.eyebrow,.label{color:var(--teal2);font-weight:800;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase}h1{font-size:clamp(2.5rem,6vw,5rem);letter-spacing:-.045em;line-height:1.02;margin:8px 0 18px;max-width:980px}h2{font-size:clamp(1.55rem,3vw,2.2rem);line-height:1.1;margin:0 0 10px}h3{margin:22px 0 7px}.lead,.purpose{color:var(--muted);font-size:1.1rem;max-width:930px}.question{margin:32px 0;padding:24px 28px;background:var(--ink);color:#fff;border-radius:16px;font-weight:700;font-size:1.12rem}.question .label{display:block;color:#8be9dc;margin-bottom:8px}.button{display:inline-block;background:var(--teal);border:0;border-radius:999px;padding:11px 17px;color:var(--ink);font:700 15px Aptos,Arial,sans-serif;text-decoration:none;cursor:pointer}.button.alt{background:#fff;border:1px solid var(--line)}.actions,.buttons{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}.grid3,.grid2,.metrics,.flow{display:grid;gap:14px}.grid3{grid-template-columns:repeat(3,1fr)}.grid2{grid-template-columns:repeat(2,1fr)}.metrics{grid-template-columns:repeat(4,1fr)}.flow{grid-template-columns:repeat(3,1fr)}.card,.interpret,.metric,.flow>div{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:19px}.card p,.flow small{display:block;color:var(--muted);margin:3px 0 0}.metric strong{font-size:1.35rem;display:block}.metric b{color:var(--teal2);font-size:.8rem;text-transform:uppercase}.nav{display:flex;overflow:auto;gap:6px;margin:36px 0;border-bottom:1px solid var(--line);padding-bottom:18px;position:sticky;top:0;background:var(--paper);z-index:3;padding-top:10px}.nav a{white-space:nowrap;text-decoration:none;color:var(--muted);font-weight:700;padding:6px 10px}.lab{padding:44px 0;border-bottom:1px solid var(--line)}.dataset-title{display:inline-block;background:var(--ink);color:#fff;border-radius:999px;padding:5px 12px;font-size:.8rem;font-weight:800;margin-bottom:10px}.code,.output{border-radius:14px;padding:20px;overflow:auto;white-space:pre;font:14px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}.code{background:var(--code);color:#d9fbf6;margin:18px 0}.output{background:#071b29;color:#d5ebe8;margin:15px 0}.command{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:15px 0}.command div{background:var(--soft);border-radius:12px;padding:13px}.command b{color:var(--teal2)}.reveal{display:none;margin-top:15px}.reveal.open{display:block}.interpret{border-left:5px solid var(--teal);margin-top:14px}.formula{margin:18px 0;padding:20px;background:var(--soft);border-radius:14px;font:1.2rem Georgia,serif;text-align:center;overflow:auto}.note{background:var(--warm);border:1px solid #f2d7a5;border-radius:14px;padding:16px;margin-top:16px}.note b{color:#97530b}.ok{background:var(--ok);border:1px solid #cfe7d4;border-radius:14px;padding:16px;margin-top:16px}.blue{background:var(--blue);border:1px solid #ccdeef;border-radius:14px;padding:16px;margin-top:16px}figure{margin:18px 0;background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px}figure img,figure canvas{width:100%;height:auto;display:block;border-radius:8px;background:#fff}figcaption{padding:10px 3px 0;color:var(--muted);font-size:.9rem}table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;margin:14px 0}th,td{text-align:left;padding:11px;border-bottom:1px solid var(--line)}th{color:var(--teal2);font-size:.8rem;text-transform:uppercase}td{color:var(--muted)}details{margin-top:28px;padding:17px 20px;background:var(--soft);border-radius:14px}summary{font-weight:800;cursor:pointer}footer{color:var(--muted);padding-bottom:45px;font-size:.9rem}.small{font-size:.92rem;color:var(--muted)}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.kbox{background:#fff;border:1px solid var(--line);border-left:5px solid var(--teal2);border-radius:14px;padding:15px;margin:14px 0}.kbox strong{color:var(--teal2)}.section-break{margin:54px 0 10px;padding:18px 0 0;border-top:3px solid var(--ink)}@media(max-width:760px){.grid3,.grid2,.metrics,.flow,.command{grid-template-columns:1fr}.code,.output{font-size:12px}.nav{position:static}}
+figure svg{display:block;width:100%;height:auto;max-height:620px}figure svg text{font-family:Arial,sans-serif}</style>
+</head>
+<body>
+<header><div>STGB33/Labb3</div><span>Kapitel 8 · Kvantitativa och kvalitativa prediktorer</span></header>
+<main>
+<div class="eyebrow">Kutner kapitel 8 · §§8.1–8.5</div>
+<h1>När modellen behöver mer än raka huvudeffekter.</h1>
+<p class="lead">Tre styrda analyser från Kutner: <strong>Power Cells</strong>, <strong>Body Fat</strong> och <strong>Insurance Innovation</strong>. Varje steg visar <strong>R-kod → full output → statistisk tolkning</strong>, med direkt koppling till modeller och ekvationer i kapitel 8.</p>
+<div class="question"><div class="label">Labbens huvudfråga</div>Hur avgör vi om en regressionsmodell behöver polynomial terms, interaction terms eller indicator variables – och hur tolkar vi modellen när sådana termer finns?</div>
+<div class="actions"><a class="button" href="power_cells.csv" download>Power Cells (.csv)</a><a class="button" href="body_fat.csv" download>Body Fat (.csv)</a><a class="button" href="insurance_innovation.csv" download>Insurance (.csv)</a><a class="button alt" href="labb3_chapter8.R" download>Komplett R-script</a><button id="teacher" class="button alt">Lärarläge: visa all output</button></div>
+<h2>Efter labben kan du...</h2>
+<div class="grid3"><div class="card"><div class="label">Polynomial regression</div><b>Bygga och förenkla en second-order model.</b><p>Centering, scaling, quadratic terms och partial F-test.</p></div><div class="card"><div class="label">Interaction</div><b>Testa om effekten av en prediktor beror på en annan.</b><p>Quantitative × quantitative och quantitative × qualitative.</p></div><div class="card"><div class="label">Indicator variables</div><b>Tolka modeller med kvalitativa prediktorer.</b><p>Referenskategori, parallella linjer och skillnader i intercept/slopes.</p></div></div>
+<nav class="nav"><a href="#overview">1 Data</a><a href="#power-code">2 Power: coding</a><a href="#power-model">3 Power: model</a><a href="#power-test">4 Power: simplify</a><a href="#body">5 Body Fat</a><a href="#insurance">6 Indicator</a><a href="#insurance-int">7 Q×Q interaction</a><a href="#summary">8 Sammanfattning</a></nav>
+
+<section class="lab" id="overview"><div class="eyebrow">Steg 1 · Tre dataset, tre modellproblem</div><h2>Vilket statistiskt problem tränar varje dataset?</h2>
+<div class="grid3"><div class="card"><div class="dataset-title">Power Cells</div><h3>§8.1</h3><p>11 power cells. Respons: antal charge/discharge cycles före failure. Prediktorer: charge rate och ambient temperature.</p><p><b>Tränar:</b> second-order polynomial model, coding, curvature, lack-of-fit och model reduction.</p></div><div class="card"><div class="dataset-title">Body Fat</div><h3>§8.2</h3><p>20 kvinnor. Respons: BODYFAT. Prediktorer: TRICEPS, THIGH och MIDARM.</p><p><b>Tränar:</b> interaction terms mellan kvantitativa prediktorer och partial F-test.</p></div><div class="card"><div class="dataset-title">Insurance Innovation</div><h3>§§8.3–8.5</h3><p>20 insurance firms. Respons: månader tills en innovation antas. Prediktorer: firm size och firm type.</p><p><b>Tränar:</b> indicator variable och quantitative × qualitative interaction.</p></div></div>
+<div class="kbox"><strong>Kutner-koppling:</strong> Power Cells = Table 8.1 och modeller (8.13)–(8.19). Body Fat återanvänds i §8.2 för model (8.29). Insurance Innovation = Table 8.2, modeller (8.33) och (8.49).</div></section>
+
+<section class="lab" id="power-code"><div class="dataset-title">Power Cells</div><div class="eyebrow">Steg 2 · Centering och scaling</div><h2>Varför kodar Kutner prediktorerna?</h2><p class="purpose">Charge rate har nivåerna 0.6, 1.0 och 1.4 A. Temperature har nivåerna 10, 20 och 30°C. Kutner centrerar och skalar så att nivåerna blir −1, 0 och 1.</p>
+<div class="formula">x₁ = (CHARGE − 1.0)/0.4 &nbsp;&nbsp;&nbsp; och &nbsp;&nbsp;&nbsp; x₂ = (TEMP − 20)/10 &nbsp;&nbsp; (8.15)</div>
+<div class="code">power &lt;- read.csv("power_cells.csv")
+power$x1 &lt;- (power$CHARGE - 1.0) / 0.4
+power$x2 &lt;- (power$TEMP - 20) / 10
+power$x1sq &lt;- power$x1^2
+power$x2sq &lt;- power$x2^2
+power$x1x2 &lt;- power$x1 * power$x2
+power</div>
+<div class="buttons"><button class="button reveal-btn" data-reveal="power-data-out">Visa data efter coding</button></div><div id="power-data-out" class="reveal"><div class="output">   CELL CYCLES CHARGE TEMP x1 x2 x1sq x2sq x1x2
+1     1    150    0.6   10 -1 -1     1     1     1
+2     2     86    1.0   10  0 -1     0     1     0
+3     3     49    1.4   10  1 -1     1     1    -1
+4     4    288    0.6   20 -1  0     1     0     0
+5     5    157    1.0   20  0  0     0     0     0
+6     6    131    1.0   20  0  0     0     0     0
+7     7    184    1.0   20  0  0     0     0     0
+8     8    109    1.4   20  1  0     1     0     0
+9     9    279    0.6   30 -1  1     1     1    -1
+10   10    235    1.0   30  0  1     0     1     0
+11   11    224    1.4   30  1  1     1     1     1</div></div>
+<div class="code">cor(power$CHARGE, power$CHARGE^2)
+cor(power$x1, power$x1^2)
+cor(power$TEMP, power$TEMP^2)
+cor(power$x2, power$x2^2)</div>
+<div class="buttons"><button class="button reveal-btn" data-reveal="power-cor-out">Visa korrelationerna</button></div><div id="power-cor-out" class="reveal"><div class="output">&gt; cor(power$CHARGE, power$CHARGE^2)
+[1] 0.9910312
+&gt; cor(power$x1, power$x1^2)
+[1] 0
+&gt; cor(power$TEMP, power$TEMP^2)
+[1] 0.9860911
+&gt; cor(power$x2, power$x2^2)
+[1] 0</div><div class="interpret"><div class="label">Tolkning</div>I de ursprungliga variablerna är X och X² nästan perfekt korrelerade. Efter Kutners coding blir korrelationen mellan x och x² här 0. Det minskar multikollinearitet och gör polynomial regression numeriskt stabilare och lättare att tolka.</div></div>
+<figure><svg viewBox="0 0 820 410" role="img" aria-label="Power Cells: observed cycles" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" rx="12" fill="#fff"/><text x="410.0" y="25" text-anchor="middle" font-size="17" font-weight="700" fill="#092235">Power Cells: observed cycles</text><line x1="70.0" y1="42" x2="70.0" y2="352" stroke="#e5ecec"/><text x="70.0" y="370" text-anchor="middle" font-size="11" fill="#526a78">0.54</text><line x1="70" y1="352.0" x2="795" y2="352.0" stroke="#e5ecec"/><text x="61" y="356.0" text-anchor="end" font-size="11" fill="#526a78">20</text><line x1="251.2" y1="42" x2="251.2" y2="352" stroke="#e5ecec"/><text x="251.2" y="370" text-anchor="middle" font-size="11" fill="#526a78">0.77</text><line x1="70" y1="274.5" x2="795" y2="274.5" stroke="#e5ecec"/><text x="61" y="278.5" text-anchor="end" font-size="11" fill="#526a78">94</text><line x1="432.5" y1="42" x2="432.5" y2="352" stroke="#e5ecec"/><text x="432.5" y="370" text-anchor="middle" font-size="11" fill="#526a78">1</text><line x1="70" y1="197.0" x2="795" y2="197.0" stroke="#e5ecec"/><text x="61" y="201.0" text-anchor="end" font-size="11" fill="#526a78">1.7e+02</text><line x1="613.8" y1="42" x2="613.8" y2="352" stroke="#e5ecec"/><text x="613.8" y="370" text-anchor="middle" font-size="11" fill="#526a78">1.2</text><line x1="70" y1="119.5" x2="795" y2="119.5" stroke="#e5ecec"/><text x="61" y="123.5" text-anchor="end" font-size="11" fill="#526a78">2.4e+02</text><line x1="795.0" y1="42" x2="795.0" y2="352" stroke="#e5ecec"/><text x="795.0" y="370" text-anchor="middle" font-size="11" fill="#526a78">1.5</text><line x1="70" y1="42.0" x2="795" y2="42.0" stroke="#e5ecec"/><text x="61" y="46.0" text-anchor="end" font-size="11" fill="#526a78">3.2e+02</text><line x1="70" y1="352" x2="795" y2="352" stroke="#6b7f89"/><line x1="70" y1="42" x2="70" y2="352" stroke="#6b7f89"/><circle cx="120.0" cy="216.4" r="5" fill="#fff" stroke="#092235" stroke-width="2"/><circle cx="432.5" cy="283.3" r="5" fill="#fff" stroke="#092235" stroke-width="2"/><circle cx="745.0" cy="322.0" r="5" fill="#fff" stroke="#092235" stroke-width="2"/><circle cx="120.0" cy="72.0" r="5" fill="#0a8e82"/><circle cx="432.5" cy="209.0" r="5" fill="#0a8e82"/><circle cx="432.5" cy="236.2" r="5" fill="#0a8e82"/><circle cx="432.5" cy="180.8" r="5" fill="#0a8e82"/><circle cx="745.0" cy="259.2" r="5" fill="#0a8e82"/><path d="M120.0,75.4 l6,11 h-12 z" fill="#587383"/><path d="M432.5,121.4 l6,11 h-12 z" fill="#587383"/><path d="M745.0,132.9 l6,11 h-12 z" fill="#587383"/><text x="432.5" y="398" text-anchor="middle" font-size="12" fill="#092235">Charge rate (A)</text><text transform="translate(18 197.0) rotate(-90)" text-anchor="middle" font-size="12" fill="#092235">Cycles before failure</text><circle cx="725.0" cy="50.0" r="5" fill="#fff" stroke="#092235" stroke-width="2"/><text x="737" y="54" font-size="11" fill="#092235">10°C</text><circle cx="725.0" cy="68.0" r="5" fill="#0a8e82"/><text x="737" y="72" font-size="11" fill="#092235">20°C</text><path d="M725.0,80.0 l6,11 h-12 z" fill="#587383"/><text x="737" y="90" font-size="11" fill="#092235">30°C</text></svg><figcaption>Power Cells: observerade cycles efter charge rate och temperatur.</figcaption></figure><div class="interpret"><div class="label">Så läser du grafen</div><p>Varje punkt visar en power cell. Symbol och färg anger temperaturen, och höjden visar hur många charge/discharge cycles cellen klarade före failure. Vid 10°C minskar antalet cycles tydligt när charge rate går från 0.6 till 1.4 A. Vid 30°C ligger värdena högre, särskilt vid de två högre charge rate-nivåerna. Vid 20°C finns tre observationer vid 1.0 A; deras spridning visar att celler vid samma inställning inte får exakt samma livslängd.</p><p>Överlag ser vi ett negativt samband mellan charge rate och livslängd och ett positivt samband mellan temperature och livslängd i det här försöket. Punkterna visar också att sambanden inte är helt enkla raka linjer. Grafen hjälper oss att se mönstret, men den testar inte i sig om quadratic- eller interaction-termer behövs; det undersöker vi med modeller och test i senare steg.</p></div>
+<details><summary>Visa R-koden till Power Cells-grafen</summary><pre class="code">plot(CYCLES ~ CHARGE, data=power,
+     pch=c(1,16,17)[match(TEMP, c(10,20,30))],
+     col=c("#092235", "#0a8e82", "#587383")[match(TEMP, c(10,20,30))],
+     xlab="Charge rate (A)", ylab="Cycles before failure",
+     main="Power Cells: observed cycles")
+legend("topright", legend=c("10°C", "20°C", "30°C"),
+       pch=c(1,16,17), col=c("#092235", "#0a8e82", "#587383"),
+       bty="n")</pre></details>
+<div class="kbox"><strong>Kutner-koppling:</strong> §8.1, (8.15), Table 8.1. Boken visar också att coding reducerar korrelationer mellan first- and second-order terms.</div></section>
+
+<section class="lab" id="power-model"><div class="dataset-title">Power Cells</div><div class="eyebrow">Steg 3 · Second-order polynomial model</div><h2>Behöver responsytan quadratic och interaction terms?</h2>
+<div class="formula">Yᵢ = β₀ + β₁xᵢ₁ + β₂xᵢ₂ + β₁₁xᵢ₁² + β₂₂xᵢ₂² + β₁₂xᵢ₁xᵢ₂ + εᵢ &nbsp; (8.13)</div>
+<div class="code">power2 &lt;- lm(CYCLES ~ x1 + x2 + x1sq + x2sq + x1x2, data=power)
+summary(power2)
+anova(power2)</div>
+<div class="buttons"><button class="button reveal-btn" data-reveal="power-model-out">Visa full R-output</button></div><div id="power-model-out" class="reveal"><div class="output">&gt; summary(power2)
+
+Residuals:
+     Min       1Q   Median       3Q      Max
+-31.8421 -20.9649   7.2632  12.7018  41.9298
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  162.8421    16.6076   9.805 0.000188 ***
+x1           -55.8333    13.2167  -4.224 0.008292 ** 
+x2            75.5000    13.2167   5.712 0.002297 ** 
+x1sq          27.3947    20.3401   1.347 0.235856    
+x2sq         -10.6053    20.3401  -0.521 0.624352    
+x1x2          11.5000    16.1871   0.710 0.509184    
+
+Residual standard error: 32.374 on 5 degrees of freedom
+Multiple R-squared: 0.9135, Adjusted R-squared: 0.8271
+F-statistic: 10.565 on 5 and 5 DF, p-value: 0.01086
+
+&gt; anova(power2)
+Analysis of Variance Table
+Response: CYCLES
+          Df  Sum Sq Mean Sq F value  Pr(&gt;F)   
+x1         1 18704.2 18704.2 17.8460 0.00829 **
+x2         1 34201.5 34201.5 32.6323 0.00230 **
+x1sq       1  1646.0  1646.0  1.5704 0.26555   
+x2sq       1   284.9   284.9  0.2719 0.62435   
+x1x2       1   529.0   529.0  0.5047 0.50918   
+Residuals  5  5240.4  1048.1</div>
+<div class="formula">Ŷ = 162.84 − 55.83x₁ + 75.50x₂ + 27.39x₁² − 10.61x₂² + 11.50x₁x₂</div>
+<div class="interpret"><div class="label">Tolkning</div>Den fulla second-order modellen har R² ≈ 0.914, men de tre second-order terms har var för sig stora p-värden. Vi ska inte därför ta bort dem en och en utan testar dem som en <strong>grupp</strong> enligt den hierarkiska principen.</div></div>
+<div class="note"><b>Hierarkisk princip:</b> om en second-order term behålls ska de tillhörande first-order terms också behållas. Ett interaction term som x₁x₂ används alltså tillsammans med x₁ och x₂.</div></div>
+<figure><svg viewBox="0 0 1000 610" role="img" aria-label="Power Cells residual diagnostic plots" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" rx="12" fill="#fff"/><text x="500" y="25" text-anchor="middle" font-size="17" font-weight="700" fill="#092235">Power Cells: residual diagnostics</text><g><text x="260.0" y="63" text-anchor="middle" font-size="15" font-weight="700" fill="#092235">Residuals versus fitted values</text><line x1="83.0" y1="77" x2="83.0" y2="243" stroke="#e7eeee"/><line x1="83" y1="243.0" x2="473" y2="243.0" stroke="#e7eeee"/><line x1="213.0" y1="77" x2="213.0" y2="243" stroke="#e7eeee"/><line x1="83" y1="187.7" x2="473" y2="187.7" stroke="#e7eeee"/><line x1="343.0" y1="77" x2="343.0" y2="243" stroke="#e7eeee"/><line x1="83" y1="132.3" x2="473" y2="132.3" stroke="#e7eeee"/><line x1="473.0" y1="77" x2="473.0" y2="243" stroke="#e7eeee"/><line x1="83" y1="77.0" x2="473" y2="77.0" stroke="#e7eeee"/><line x1="83" y1="168.9" x2="473" y2="168.9" stroke="#81929b" stroke-dasharray="6 5"/><circle cx="282.3" cy="206.6" r="4.5" fill="#0a8e82"/><circle cx="161.0" cy="152.6" r="4.5" fill="#0a8e82"/><circle cx="109.9" cy="147.4" r="4.5" fill="#0a8e82"/><circle cx="377.8" cy="95.2" r="4.5" fill="#0a8e82"/><circle cx="271.2" cy="179.1" r="4.5" fill="#0a8e82"/><circle cx="271.2" cy="224.8" r="4.5" fill="#0a8e82"/><circle cx="271.2" cy="131.7" r="4.5" fill="#0a8e82"/><circle cx="234.8" cy="213.5" r="4.5" fill="#0a8e82"/><circle cx="446.1" cy="204.8" r="4.5" fill="#0a8e82"/><circle cx="354.3" cy="156.1" r="4.5" fill="#0a8e82"/><circle cx="332.6" cy="145.7" r="4.5" fill="#0a8e82"/><line x1="83" y1="243" x2="473" y2="243" stroke="#6b7f89"/><line x1="83" y1="77" x2="83" y2="243" stroke="#6b7f89"/><text x="278.0" y="278" text-anchor="middle" font-size="11" fill="#092235">Fitted values</text><text transform="translate(47 160.0) rotate(-90)" text-anchor="middle" font-size="11" fill="#092235">Residuals</text></g><g><text x="740.0" y="63" text-anchor="middle" font-size="15" font-weight="700" fill="#092235">Residuals versus x1</text><line x1="563.0" y1="77" x2="563.0" y2="243" stroke="#e7eeee"/><line x1="563" y1="243.0" x2="953" y2="243.0" stroke="#e7eeee"/><line x1="693.0" y1="77" x2="693.0" y2="243" stroke="#e7eeee"/><line x1="563" y1="187.7" x2="953" y2="187.7" stroke="#e7eeee"/><line x1="823.0" y1="77" x2="823.0" y2="243" stroke="#e7eeee"/><line x1="563" y1="132.3" x2="953" y2="132.3" stroke="#e7eeee"/><line x1="953.0" y1="77" x2="953.0" y2="243" stroke="#e7eeee"/><line x1="563" y1="77.0" x2="953" y2="77.0" stroke="#e7eeee"/><line x1="563" y1="168.9" x2="953" y2="168.9" stroke="#81929b" stroke-dasharray="6 5"/><circle cx="589.9" cy="206.6" r="4.5" fill="#0a8e82"/><circle cx="758.0" cy="152.6" r="4.5" fill="#0a8e82"/><circle cx="926.1" cy="147.4" r="4.5" fill="#0a8e82"/><circle cx="589.9" cy="95.2" r="4.5" fill="#0a8e82"/><circle cx="758.0" cy="179.1" r="4.5" fill="#0a8e82"/><circle cx="758.0" cy="224.8" r="4.5" fill="#0a8e82"/><circle cx="758.0" cy="131.7" r="4.5" fill="#0a8e82"/><circle cx="926.1" cy="213.5" r="4.5" fill="#0a8e82"/><circle cx="589.9" cy="204.8" r="4.5" fill="#0a8e82"/><circle cx="758.0" cy="156.1" r="4.5" fill="#0a8e82"/><circle cx="926.1" cy="145.7" r="4.5" fill="#0a8e82"/><line x1="563" y1="243" x2="953" y2="243" stroke="#6b7f89"/><line x1="563" y1="77" x2="563" y2="243" stroke="#6b7f89"/><text x="758.0" y="278" text-anchor="middle" font-size="11" fill="#092235">x1 (coded charge)</text><text transform="translate(527 160.0) rotate(-90)" text-anchor="middle" font-size="11" fill="#092235">Residuals</text></g><g><text x="260.0" y="348" text-anchor="middle" font-size="15" font-weight="700" fill="#092235">Residuals versus x2</text><line x1="83.0" y1="362" x2="83.0" y2="528" stroke="#e7eeee"/><line x1="83" y1="528.0" x2="473" y2="528.0" stroke="#e7eeee"/><line x1="213.0" y1="362" x2="213.0" y2="528" stroke="#e7eeee"/><line x1="83" y1="472.7" x2="473" y2="472.7" stroke="#e7eeee"/><line x1="343.0" y1="362" x2="343.0" y2="528" stroke="#e7eeee"/><line x1="83" y1="417.3" x2="473" y2="417.3" stroke="#e7eeee"/><line x1="473.0" y1="362" x2="473.0" y2="528" stroke="#e7eeee"/><line x1="83" y1="362.0" x2="473" y2="362.0" stroke="#e7eeee"/><line x1="83" y1="453.9" x2="473" y2="453.9" stroke="#81929b" stroke-dasharray="6 5"/><circle cx="109.9" cy="491.6" r="4.5" fill="#0a8e82"/><circle cx="109.9" cy="437.6" r="4.5" fill="#0a8e82"/><circle cx="109.9" cy="432.4" r="4.5" fill="#0a8e82"/><circle cx="278.0" cy="380.2" r="4.5" fill="#0a8e82"/><circle cx="278.0" cy="464.1" r="4.5" fill="#0a8e82"/><circle cx="278.0" cy="509.8" r="4.5" fill="#0a8e82"/><circle cx="278.0" cy="416.7" r="4.5" fill="#0a8e82"/><circle cx="278.0" cy="498.5" r="4.5" fill="#0a8e82"/><circle cx="446.1" cy="489.8" r="4.5" fill="#0a8e82"/><circle cx="446.1" cy="441.1" r="4.5" fill="#0a8e82"/><circle cx="446.1" cy="430.7" r="4.5" fill="#0a8e82"/><line x1="83" y1="528" x2="473" y2="528" stroke="#6b7f89"/><line x1="83" y1="362" x2="83" y2="528" stroke="#6b7f89"/><text x="278.0" y="563" text-anchor="middle" font-size="11" fill="#092235">x2 (coded temperature)</text><text transform="translate(47 445.0) rotate(-90)" text-anchor="middle" font-size="11" fill="#092235">Residuals</text></g><g><text x="740.0" y="348" text-anchor="middle" font-size="15" font-weight="700" fill="#092235">Normal probability plot</text><line x1="563.0" y1="362" x2="563.0" y2="528" stroke="#e7eeee"/><line x1="563" y1="528.0" x2="953" y2="528.0" stroke="#e7eeee"/><line x1="693.0" y1="362" x2="693.0" y2="528" stroke="#e7eeee"/><line x1="563" y1="472.7" x2="953" y2="472.7" stroke="#e7eeee"/><line x1="823.0" y1="362" x2="823.0" y2="528" stroke="#e7eeee"/><line x1="563" y1="417.3" x2="953" y2="417.3" stroke="#e7eeee"/><line x1="953.0" y1="362" x2="953.0" y2="528" stroke="#e7eeee"/><line x1="563" y1="362.0" x2="953" y2="362.0" stroke="#e7eeee"/><line x1="589.9" y1="509.8" x2="926.1" y2="380.2" stroke="#81929b" stroke-dasharray="6 5"/><circle cx="589.9" cy="509.8" r="4.5" fill="#0a8e82"/><circle cx="648.9" cy="498.5" r="4.5" fill="#0a8e82"/><circle cx="683.6" cy="491.6" r="4.5" fill="#0a8e82"/><circle cx="711.0" cy="489.8" r="4.5" fill="#0a8e82"/><circle cx="735.1" cy="464.1" r="4.5" fill="#0a8e82"/><circle cx="758.0" cy="441.1" r="4.5" fill="#0a8e82"/><circle cx="780.9" cy="437.6" r="4.5" fill="#0a8e82"/><circle cx="805.0" cy="432.4" r="4.5" fill="#0a8e82"/><circle cx="832.4" cy="430.7" r="4.5" fill="#0a8e82"/><circle cx="867.1" cy="416.7" r="4.5" fill="#0a8e82"/><circle cx="926.1" cy="380.2" r="4.5" fill="#0a8e82"/><line x1="563" y1="528" x2="953" y2="528" stroke="#6b7f89"/><line x1="563" y1="362" x2="563" y2="528" stroke="#6b7f89"/><text x="758.0" y="563" text-anchor="middle" font-size="11" fill="#092235">Theoretical normal quantiles</text><text transform="translate(527 445.0) rotate(-90)" text-anchor="middle" font-size="11" fill="#092235">Ordered residuals</text></g></svg><figcaption>Power Cells: residualer mot fitted values och de kodade prediktorerna samt normal probability plot. Återskapad med Power Cells-data enligt diagnosuppsättningen i Kutners Figure 8.5.</figcaption></figure>
+<div class="interpret"><div class="label">Tolkning av de fyra diagnostiska diagrammen</div><p><b>Residualer mot fitted values:</b> Punkterna ligger på båda sidor om nollinjen. Ingen tydlig funnel syns, och det finns inget tydligt curvature-mönster. Det ger inget uppenbart tecken på att residualernas spridning ökar med den förväntade responsen.</p><p><b>Residualer mot x₁ (coded charge):</b> Punkterna bildar lodräta grupper eftersom charge rate bara har tre nivåer. Residualerna ligger både över och under noll vid nivåerna. Ingen tydlig systematisk förändring syns, men några residualer är ganska stora.</p><p><b>Residualer mot x₂ (coded temperature):</b> Här bildas också grupper vid de tre temperaturerna. Residualerna växlar mellan positiva och negativa värden utan en tydlig trend över temperatur. Spridningen är märkbar, så grafen ska bedömas tillsammans med övriga kontroller.</p><p><b>Normal probability plot:</b> Punkterna följer ungefär den raka referenslinjen, men avviker något i ändarna. Det är förenligt med ungefär normalfördelade fel, men bara 11 observationer ger ett osäkert underlag. Sammantaget ser vi ingen grov avvikelse från modellen; diagnostiken bevisar inte att alla antaganden är uppfyllda.</p></div>
+<details><summary>Visa R-koden till de fyra diagnostiska diagrammen</summary><pre class="code">png("plots/power-diagnostics.png", width=1500, height=1050, res=160)
+par(mfrow=c(2,2), mar=c(4,4,2,1))
+plot(fitted(power2), resid(power2), pch=19,
+     xlab="Fitted values", ylab="Residuals")
+abline(h=0, lty=2)
+plot(power$x1, resid(power2), pch=19,
+     xlab="x1 (coded charge)", ylab="Residuals")
+abline(h=0, lty=2)
+plot(power$x2, resid(power2), pch=19,
+     xlab="x2 (coded temperature)", ylab="Residuals")
+abline(h=0, lty=2)
+qqnorm(resid(power2), pch=19)
+qqline(resid(power2), lty=2)
+dev.off()
+par(mfrow=c(1,1))</pre></details>
+<div class="kbox"><strong>Kutner-koppling:</strong> §8.1, (8.13)–(8.16), Figure 8.4.</div></section>
+
+<section class="lab" id="power-test"><div class="dataset-title">Power Cells</div><div class="eyebrow">Steg 4 · Testa fit och förenkla modellen</div><h2>Är first-order model tillräcklig?</h2>
+<h3>4A · Lack-of-fit med de tre replikaten i centrum</h3><p class="small">Här används bara de tre observationerna i centrum för att beräkna <em>pure error</em>. Sedan jämför vi den variationen med felet från den fitted modellen.</p><div class="interpret"><div class="label">Hypoteser</div><p><b>H₀:</b> Modellen saknar lack-of-fit. Skillnaderna mellan de observerade medelvärdena och modellens förväntade värden beror på slumpvariation.</p><p><b>Hₐ:</b> Modellen har lack-of-fit. Minst ett observerat medelvärde avviker systematiskt från modellens förväntade värde.</p></div>
+<div class="code"># 1. De tre upprepade mätningarna i centrum
+center_cycles &lt;- power$CYCLES[power$CHARGE == 1.0 &amp; power$TEMP == 20]
+
+# 2. Pure-error sum of squares
+SSPE &lt;- sum((center_cycles - mean(center_cycles))^2)
+
+# 3. Fel från den fitted second-order modellen
+SSE &lt;- sum(resid(power2)^2)
+
+# 4. Antal observationer, designpunkter och modellparametrar
+n &lt;- nrow(power)                  # 11 observationer
+m &lt;- 9                            # 9 olika kombinationer av X1 och X2
+p &lt;- length(coef(power2))         # 6 parametrar, inklusive intercept
+
+df_PE &lt;- n - m                    # 2 frihetsgrader
+df_LOF &lt;- m - p                  # 3 frihetsgrader
+SS_LOF &lt;- SSE - SSPE
+
+# 5. Lack-of-fit F-test
+F_LOF &lt;- (SS_LOF / df_LOF) / (SSPE / df_PE)
+p_value &lt;- pf(F_LOF, df_LOF, df_PE, lower.tail=FALSE)
+
+c(SSPE=SSPE, SS_LOF=SS_LOF, df_PE=df_PE, df_LOF=df_LOF,
+  F=F_LOF, p_value=p_value)</div>
+<div class="buttons"><button class="button reveal-btn" data-reveal="lof-out">Visa lack-of-fit-resultat</button></div><div id="lof-out" class="reveal"><div class="output">      SSPE     SS_LOF      df_PE      df_LOF          F    p_value
+1404.6667  3835.7719     2.0000     3.0000     1.8205     0.3738</div><div class="interpret"><div class="label">Tolkning</div>Vi får F ≈ 1.82. Testet ger ingen evidens för lack-of-fit av second-order modellen. Det betyder inte att alla second-order terms behövs; det betyder att den fulla modellen är förenlig med de replikerade observationerna.</div></div>
+<h3>4B · Partial F-test: behövs x₁², x₂² och x₁x₂ tillsammans?</h3><div class="formula">H₀: β₁₁ = β₂₂ = β₁₂ = 0 &nbsp;&nbsp; mot &nbsp;&nbsp; Hₐ: minst en är ≠ 0</div>
+<div class="code">power1 &lt;- lm(CYCLES ~ x1 + x2, data=power)
+anova(power1, power2)</div>
+<div class="buttons"><button class="button reveal-btn" data-reveal="partial-out">Visa model comparison</button></div><div id="partial-out" class="reveal"><div class="output">Analysis of Variance Table
+
+Model 1: CYCLES ~ x1 + x2
+Model 2: CYCLES ~ x1 + x2 + x1sq + x2sq + x1x2
+  Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
+1      8 7700.3                           
+2      5 5240.4  3    2459.9 0.7823 0.5527</div><div class="interpret"><div class="label">Tolkning</div>p ≈ 0.553. Vi har inte evidens för att second-order terms behövs som grupp. Därför går vi vidare med den enklare first-order modellen.</div></div>
+<div class="code">summary(power1)</div><div class="buttons"><button class="button reveal-btn" data-reveal="power1-out">Visa first-order output</button></div><div id="power1-out" class="reveal"><div class="output">Residuals:
+     Min       1Q   Median       3Q      Max
+-41.0000 -13.7500  -7.1667  10.1667  60.1667
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 172.0000     9.3543  18.387 7.88e-08 ***
+x1          -55.8333    12.6658  -4.408 0.002262 ** 
+x2           75.5000    12.6658   5.961 0.000338 ***
+
+Residual standard error: 31.025 on 8 degrees of freedom
+Multiple R-squared: 0.8729, Adjusted R-squared: 0.8412
+F-statistic: 27.482 on 2 and 8 DF, p-value: 0.0002606</div>
+<div class="formula">coded: Ŷ = 172.00 − 55.83x₁ + 75.50x₂</div><div class="formula">original units: Ŷ = 160.58 − 139.58·CHARGE + 7.55·TEMP &nbsp; (8.19)</div>
+<div class="interpret"><div class="label">Praktisk tolkning</div>Med temperature konstant minskar den förväntade livslängden när charge rate ökar. Med charge rate konstant ökar den förväntade livslängden när temperature ökar inom det studerade området. Modellen ska inte extrapoleras långt utanför 0.6–1.4 A och 10–30°C.</div></div></div>
+<div class="kbox"><strong>Kutner-koppling:</strong> §8.1, hierarkisk model reduction, partial F-test, (8.17)–(8.19).</div></section>
+
+<section class="lab" id="body"><div class="dataset-title">Body Fat</div><div class="eyebrow">Steg 5 · Interaction mellan kvantitativa prediktorer</div><h2>Tillför pairwise interaction terms information?</h2><p class="purpose">Kutner återvänder i §8.2 till Body Fat-data. Först centeras TRICEPS, THIGH och MIDARM. Därefter läggs de tre pairwise interaction terms till.</p>
+<div class="formula">Y = β₀ + β₁x₁ + β₂x₂ + β₃x₃ + β₄x₁x₂ + β₅x₁x₃ + β₆x₂x₃ + ε</div>
+<div class="code">bodyfat$x1 &lt;- bodyfat$TRICEPS - mean(bodyfat$TRICEPS)
+bodyfat$x2 &lt;- bodyfat$THIGH   - mean(bodyfat$THIGH)
+bodyfat$x3 &lt;- bodyfat$MIDARM  - mean(bodyfat$MIDARM)
+
+additive &lt;- lm(BODYFAT ~ x1 + x2 + x3, data=bodyfat)
+interact &lt;- lm(BODYFAT ~ x1 + x2 + x3 + x1:x2 + x1:x3 + x2:x3,
+               data=bodyfat)
+summary(interact)
+anova(additive, interact)</div>
+<div class="buttons"><button class="button reveal-btn" data-reveal="body-out">Visa full output</button></div><div id="body-out" class="reveal"><div class="output">&gt; summary(interact)
+
+Residuals:
+     Min       1Q   Median       3Q      Max
+ -3.9267  -0.8728   0.1682   1.2929   3.3310
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept) 20.52689    1.07363  19.119  &lt; 1e-09 ***
+x1           3.43781    3.57867   0.961   0.3543
+x2          -2.09472    3.03677  -0.690   0.5025
+x3          -1.61634    1.90721  -0.847   0.4121
+x1:x2        0.00888    0.03085   0.288   0.7781
+x1:x3       -0.08479    0.07342  -1.155   0.2689
+x2:x3        0.09042    0.09200   0.983   0.3437
+
+Residual standard error: 2.597 on 13 degrees of freedom
+Multiple R-squared: 0.8230, Adjusted R-squared: 0.7413
+F-statistic: 10.07 on 6 and 13 DF, p-value: 0.0002959
+
+&gt; anova(additive, interact)
+Analysis of Variance Table
+Model 1: BODYFAT ~ x1 + x2 + x3
+Model 2: BODYFAT ~ x1 + x2 + x3 + x1:x2 + x1:x3 + x2:x3
+  Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
+1     16 98.405                           
+2     13 87.690  3    10.715 0.5295 0.6699</div>
+<div class="interpret"><div class="label">Tolkning</div>Det gemensamma partial F-testet ger p ≈ 0.67. Det finns alltså ingen evidens för att de tre pairwise interaction terms behövs i denna modell. Detta är viktigare än att bedöma varje interaction coefficient separat.</div></div>
+<figure><svg viewBox="0 0 1050 405" role="img" aria-label="Body Fat residuals plotted against three pairwise interaction products" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" rx="12" fill="#fff"/><g><text x="180.0" y="43" text-anchor="middle" font-size="15" font-weight="700" fill="#092235">Residuals versus x1 * x2</text><line x1="63.0" y1="57" x2="63.0" y2="333" stroke="#e7eeee"/><line x1="63" y1="333.0" x2="333" y2="333.0" stroke="#e7eeee"/><line x1="153.0" y1="57" x2="153.0" y2="333" stroke="#e7eeee"/><line x1="63" y1="241.0" x2="333" y2="241.0" stroke="#e7eeee"/><line x1="243.0" y1="57" x2="243.0" y2="333" stroke="#e7eeee"/><line x1="63" y1="149.0" x2="333" y2="149.0" stroke="#e7eeee"/><line x1="333.0" y1="57" x2="333.0" y2="333" stroke="#e7eeee"/><line x1="63" y1="57.0" x2="333" y2="57.0" stroke="#e7eeee"/><line x1="63" y1="200.5" x2="333" y2="200.5" stroke="#81929b" stroke-dasharray="6 5"/><circle cx="201.9" cy="281.6" r="4.5" fill="#0a8e82"/><circle cx="83.7" cy="129.6" r="4.5" fill="#0a8e82"/><circle cx="91.7" cy="263.3" r="4.5" fill="#0a8e82"/><circle cx="117.7" cy="283.6" r="4.5" fill="#0a8e82"/><circle cx="224.5" cy="169.1" r="4.5" fill="#0a8e82"/><circle cx="83.6" cy="215.4" r="4.5" fill="#0a8e82"/><circle cx="196.3" cy="162.5" r="4.5" fill="#0a8e82"/><circle cx="87.8" cy="114.6" r="4.5" fill="#0a8e82"/><circle cx="92.0" cy="153.7" r="4.5" fill="#0a8e82"/><circle cx="82.7" cy="234.8" r="4.5" fill="#0a8e82"/><circle cx="162.4" cy="178.4" r="4.5" fill="#0a8e82"/><circle cx="153.9" cy="139.9" r="4.5" fill="#0a8e82"/><circle cx="160.8" cy="291.4" r="4.5" fill="#0a8e82"/><circle cx="181.9" cy="87.2" r="4.5" fill="#0a8e82"/><circle cx="314.4" cy="173.4" r="4.5" fill="#0a8e82"/><circle cx="116.4" cy="195.8" r="4.5" fill="#0a8e82"/><circle cx="107.0" cy="210.8" r="4.5" fill="#0a8e82"/><circle cx="175.0" cy="238.6" r="4.5" fill="#0a8e82"/><circle cx="101.4" cy="302.8" r="4.5" fill="#0a8e82"/><circle cx="81.6" cy="183.7" r="4.5" fill="#0a8e82"/><line x1="63" y1="333" x2="333" y2="333" stroke="#6b7f89"/><line x1="63" y1="57" x2="63" y2="333" stroke="#6b7f89"/><text x="198.0" y="368" text-anchor="middle" font-size="11" fill="#092235">x1 * x2</text><text transform="translate(27 195.0) rotate(-90)" text-anchor="middle" font-size="11" fill="#092235">Additive-model residuals</text></g><g><text x="525.0" y="43" text-anchor="middle" font-size="15" font-weight="700" fill="#092235">Residuals versus x1 * x3</text><line x1="408.0" y1="57" x2="408.0" y2="333" stroke="#e7eeee"/><line x1="408" y1="333.0" x2="678" y2="333.0" stroke="#e7eeee"/><line x1="498.0" y1="57" x2="498.0" y2="333" stroke="#e7eeee"/><line x1="408" y1="241.0" x2="678" y2="241.0" stroke="#e7eeee"/><line x1="588.0" y1="57" x2="588.0" y2="333" stroke="#e7eeee"/><line x1="408" y1="149.0" x2="678" y2="149.0" stroke="#e7eeee"/><line x1="678.0" y1="57" x2="678.0" y2="333" stroke="#e7eeee"/><line x1="408" y1="57.0" x2="678" y2="57.0" stroke="#e7eeee"/><line x1="408" y1="200.5" x2="678" y2="200.5" stroke="#81929b" stroke-dasharray="6 5"/><circle cx="457.7" cy="281.6" r="4.5" fill="#0a8e82"/><circle cx="479.5" cy="129.6" r="4.5" fill="#0a8e82"/><circle cx="614.3" cy="263.3" r="4.5" fill="#0a8e82"/><circle cx="521.8" cy="283.6" r="4.5" fill="#0a8e82"/><circle cx="426.6" cy="169.1" r="4.5" fill="#0a8e82"/><circle cx="477.4" cy="215.4" r="4.5" fill="#0a8e82"/><circle cx="480.1" cy="162.5" r="4.5" fill="#0a8e82"/><circle cx="500.9" cy="114.6" r="4.5" fill="#0a8e82"/><circle cx="517.9" cy="153.7" r="4.5" fill="#0a8e82"/><circle cx="479.0" cy="234.8" r="4.5" fill="#0a8e82"/><circle cx="516.9" cy="178.4" r="4.5" fill="#0a8e82"/><circle cx="489.6" cy="139.9" r="4.5" fill="#0a8e82"/><circle cx="561.2" cy="291.4" r="4.5" fill="#0a8e82"/><circle cx="465.9" cy="87.2" r="4.5" fill="#0a8e82"/><circle cx="659.4" cy="173.4" r="4.5" fill="#0a8e82"/><circle cx="508.0" cy="195.8" r="4.5" fill="#0a8e82"/><circle cx="468.3" cy="210.8" r="4.5" fill="#0a8e82"/><circle cx="441.4" cy="238.6" r="4.5" fill="#0a8e82"/><circle cx="484.0" cy="302.8" r="4.5" fill="#0a8e82"/><circle cx="480.5" cy="183.7" r="4.5" fill="#0a8e82"/><line x1="408" y1="333" x2="678" y2="333" stroke="#6b7f89"/><line x1="408" y1="57" x2="408" y2="333" stroke="#6b7f89"/><text x="543.0" y="368" text-anchor="middle" font-size="11" fill="#092235">x1 * x3</text><text transform="translate(372 195.0) rotate(-90)" text-anchor="middle" font-size="11" fill="#092235">Additive-model residuals</text></g><g><text x="870.0" y="43" text-anchor="middle" font-size="15" font-weight="700" fill="#092235">Residuals versus x2 * x3</text><line x1="753.0" y1="57" x2="753.0" y2="333" stroke="#e7eeee"/><line x1="753" y1="333.0" x2="1023" y2="333.0" stroke="#e7eeee"/><line x1="843.0" y1="57" x2="843.0" y2="333" stroke="#e7eeee"/><line x1="753" y1="241.0" x2="1023" y2="241.0" stroke="#e7eeee"/><line x1="933.0" y1="57" x2="933.0" y2="333" stroke="#e7eeee"/><line x1="753" y1="149.0" x2="1023" y2="149.0" stroke="#e7eeee"/><line x1="1023.0" y1="57" x2="1023.0" y2="333" stroke="#e7eeee"/><line x1="753" y1="57.0" x2="1023" y2="57.0" stroke="#e7eeee"/><line x1="753" y1="200.5" x2="1023" y2="200.5" stroke="#81929b" stroke-dasharray="6 5"/><circle cx="820.7" cy="281.6" r="4.5" fill="#0a8e82"/><circle cx="851.9" cy="129.6" r="4.5" fill="#0a8e82"/><circle cx="873.4" cy="263.3" r="4.5" fill="#0a8e82"/><circle cx="884.7" cy="283.6" r="4.5" fill="#0a8e82"/><circle cx="771.6" cy="169.1" r="4.5" fill="#0a8e82"/><circle cx="824.1" cy="215.4" r="4.5" fill="#0a8e82"/><circle cx="853.8" cy="162.5" r="4.5" fill="#0a8e82"/><circle cx="862.0" cy="114.6" r="4.5" fill="#0a8e82"/><circle cx="869.9" cy="153.7" r="4.5" fill="#0a8e82"/><circle cx="835.7" cy="234.8" r="4.5" fill="#0a8e82"/><circle cx="890.4" cy="178.4" r="4.5" fill="#0a8e82"/><circle cx="864.7" cy="139.9" r="4.5" fill="#0a8e82"/><circle cx="914.7" cy="291.4" r="4.5" fill="#0a8e82"/><circle cx="835.0" cy="87.2" r="4.5" fill="#0a8e82"/><circle cx="1004.4" cy="173.4" r="4.5" fill="#0a8e82"/><circle cx="876.7" cy="195.8" r="4.5" fill="#0a8e82"/><circle cx="831.9" cy="210.8" r="4.5" fill="#0a8e82"/><circle cx="791.2" cy="238.6" r="4.5" fill="#0a8e82"/><circle cx="858.5" cy="302.8" r="4.5" fill="#0a8e82"/><circle cx="854.2" cy="183.7" r="4.5" fill="#0a8e82"/><line x1="753" y1="333" x2="1023" y2="333" stroke="#6b7f89"/><line x1="753" y1="57" x2="753" y2="333" stroke="#6b7f89"/><text x="888.0" y="368" text-anchor="middle" font-size="11" fill="#092235">x2 * x3</text><text transform="translate(717 195.0) rotate(-90)" text-anchor="middle" font-size="11" fill="#092235">Additive-model residuals</text></g></svg><figcaption>Body Fat: residualer från den additiva modellen mot de tre möjliga parvisa interaktionerna. Kutner föreslår denna typ av diagram för att screena tänkbara interaktioner innan en större modell väljs.</figcaption></figure>
+<div class="interpret"><div class="label">Tolkning av residualdiagrammen</div><p>Varje panel jämför residualerna från den additiva modellen med en möjlig produkt mellan två prediktorer. Om ett tydligt curvature-mönster syntes kunde det tyda på att modellen saknar en interaction term. Här är punkterna spridda kring noll utan ett tydligt systematiskt mönster i någon av de tre panelerna.</p><p>Diagrammen ger därför inget starkt visuellt skäl att lägga till interaction terms. Det stämmer med partial F-testet (p ≈ 0.67), som inte visar stöd för att de tre termerna behövs tillsammans. Ett residualdiagram är en screeninghjälp; det kan inte ensamt bevisa att en interaktion saknas.</p></div>
+<details><summary>Visa R-koden till Body Fat-diagrammen</summary><pre class="code">body.resid &lt;- resid(additive)
+par(mfrow=c(1,3))
+plot(bodyfat$x1 * bodyfat$x2, body.resid,
+     xlab="x1 * x2", ylab="Additive-model residuals")
+abline(h=0, lty=2)
+plot(bodyfat$x1 * bodyfat$x3, body.resid,
+     xlab="x1 * x3", ylab="Additive-model residuals")
+abline(h=0, lty=2)
+plot(bodyfat$x2 * bodyfat$x3, body.resid,
+     xlab="x2 * x3", ylab="Additive-model residuals")
+abline(h=0, lty=2)
+par(mfrow=c(1,1))</pre></details>
+<div class="blue"><strong>Varför centerar vi?</strong> Utan centering blir cross-product terms ofta starkt korrelerade med originalprediktorerna. Kutner visar att centering reducerar dessa korrelationer tydligt i Body Fat-exemplet.</div></div>
+<div class="kbox"><strong>Kutner-koppling:</strong> §8.2, Body Fat interaction example, model (8.29). Kutners partial F-resultat är F ≈ 0.53 med p ≈ 0.67.</div></section>
+
+<section class="lab" id="insurance"><div class="dataset-title">Insurance Innovation</div><div class="eyebrow">Steg 6 · Indicator variable för firm type</div><h2>Hur lägger vi in en kvalitativ prediktor?</h2><p class="purpose">TYPE har två klasser: Mutual och Stock. I R låter vi TYPE vara en factor med Mutual som referenskategori. Då skapar R en indicator variable för Stock.</p>
+<div class="formula">Yᵢ = β₀ + β₁SIZEᵢ + β₂STOCKᵢ + εᵢ &nbsp; (8.33)</div>
+<div class="code">insurance &lt;- read.csv("insurance_innovation.csv")
+insurance$TYPE &lt;- factor(insurance$TYPE, levels=c("Mutual","Stock"))
+parallel &lt;- lm(MONTHS ~ SIZE + TYPE, data=insurance)
+summary(parallel)
+confint(parallel, "TYPEStock", level=0.95)</div>
+<div class="buttons"><button class="button reveal-btn" data-reveal="ins-out">Visa full output</button></div><div id="ins-out" class="reveal"><div class="output">&gt; summary(parallel)
+
+Residuals:
+     Min       1Q   Median       3Q      Max
+ -5.6915  -1.7036  -0.4385   1.9210   6.3406
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  33.87407    1.81386  18.675 9.15e-13 ***
+SIZE         -0.10174    0.00889 -11.443 2.07e-09 ***
+TYPEStock     8.05547    1.45911   5.521 3.74e-05 ***
+
+Residual standard error: 3.221 on 17 degrees of freedom
+Multiple R-squared: 0.8951, Adjusted R-squared: 0.8827
+F-statistic: 72.50 on 2 and 17 DF, p-value: 4.77e-09
+
+&gt; confint(parallel, "TYPEStock", level=0.95)
+              2.5 %   97.5 %
+TYPEStock     4.977   11.134</div>
+<div class="formula">Mutual: Ŷ = 33.874 − 0.10174·SIZE</div><div class="formula">Stock: Ŷ = (33.874 + 8.055) − 0.10174·SIZE</div>
+<div class="interpret"><div class="label">Tolkning</div>Modellen antar samma slope för båda firm types. För en given firm size ligger Stock-linjen cirka 8.06 månader högre än Mutual-linjen. Ett 95% KI för skillnaden är ungefär 4.98–11.13 månader.</div></div>
+<figure><svg viewBox="0 0 850 430" role="img" aria-label="Insurance Innovation: fitted parallel lines" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" rx="12" fill="#fff"/><text x="425.0" y="25" text-anchor="middle" font-size="17" font-weight="700" fill="#092235">Insurance Innovation: fitted parallel lines</text><line x1="70.0" y1="42" x2="70.0" y2="372" stroke="#e5ecec"/><text x="70.0" y="390" text-anchor="middle" font-size="11" fill="#526a78">9.1</text><line x1="70" y1="372.0" x2="825" y2="372.0" stroke="#e5ecec"/><text x="61" y="376.0" text-anchor="end" font-size="11" fill="#526a78">-4.6</text><line x1="258.8" y1="42" x2="258.8" y2="372" stroke="#e5ecec"/><text x="258.8" y="390" text-anchor="middle" font-size="11" fill="#526a78">89</text><line x1="70" y1="289.5" x2="825" y2="289.5" stroke="#e5ecec"/><text x="61" y="293.5" text-anchor="end" font-size="11" fill="#526a78">7.2</text><line x1="447.5" y1="42" x2="447.5" y2="372" stroke="#e5ecec"/><text x="447.5" y="390" text-anchor="middle" font-size="11" fill="#526a78">1.7e+02</text><line x1="70" y1="207.0" x2="825" y2="207.0" stroke="#e5ecec"/><text x="61" y="211.0" text-anchor="end" font-size="11" fill="#526a78">19</text><line x1="636.3" y1="42" x2="636.3" y2="372" stroke="#e5ecec"/><text x="636.3" y="390" text-anchor="middle" font-size="11" fill="#526a78">2.5e+02</text><line x1="70" y1="124.5" x2="825" y2="124.5" stroke="#e5ecec"/><text x="61" y="128.5" text-anchor="end" font-size="11" fill="#526a78">31</text><line x1="825.0" y1="42" x2="825.0" y2="372" stroke="#e5ecec"/><text x="825.0" y="390" text-anchor="middle" font-size="11" fill="#526a78">3.3e+02</text><line x1="70" y1="42.0" x2="825" y2="42.0" stroke="#e5ecec"/><text x="61" y="46.0" text-anchor="end" font-size="11" fill="#526a78">43</text><line x1="70" y1="372" x2="825" y2="372" stroke="#6b7f89"/><line x1="70" y1="42" x2="70" y2="372" stroke="#6b7f89"/><polyline points="122.1,124.9 772.9,320.2" fill="none" stroke="#092235" stroke-width="2.5"/><polyline points="122.1,68.5 772.9,263.7" fill="none" stroke="#0a8e82" stroke-width="2.5" stroke-dasharray="7 5"/><circle cx="407.1" cy="221.0" r="5" fill="#fff" stroke="#092235" stroke-width="2"/><circle cx="267.0" cy="158.0" r="5" fill="#fff" stroke="#092235" stroke-width="2"/><circle cx="464.1" cy="193.0" r="5" fill="#fff" stroke="#092235" stroke-width="2"/><circle cx="122.1" cy="130.0" r="5" fill="#fff" stroke="#092235" stroke-width="2"/><circle cx="295.5" cy="186.0" r="5" fill="#fff" stroke="#092235" stroke-width="2"/><circle cx="706.4" cy="340.1" r="5" fill="#fff" stroke="#092235" stroke-width="2"/><circle cx="547.3" cy="256.0" r="5" fill="#fff" stroke="#092235" stroke-width="2"/><circle cx="333.5" cy="207.0" r="5" fill="#fff" stroke="#092235" stroke-width="2"/><circle cx="737.3" cy="312.1" r="5" fill="#fff" stroke="#092235" stroke-width="2"/><circle cx="613.8" cy="228.0" r="5" fill="#fff" stroke="#092235" stroke-width="2"/><circle cx="438.0" cy="144.0" r="5" fill="#0a8e82"/><circle cx="694.5" cy="235.0" r="5" fill="#0a8e82"/><circle cx="749.2" cy="263.0" r="5" fill="#0a8e82"/><circle cx="210.0" cy="73.9" r="5" fill="#0a8e82"/><circle cx="250.3" cy="123.0" r="5" fill="#0a8e82"/><circle cx="580.5" cy="193.0" r="5" fill="#0a8e82"/><circle cx="442.7" cy="200.0" r="5" fill="#0a8e82"/><circle cx="772.9" cy="249.0" r="5" fill="#0a8e82"/><circle cx="343.0" cy="130.0" r="5" fill="#0a8e82"/><circle cx="632.8" cy="242.0" r="5" fill="#0a8e82"/><text x="447.5" y="418" text-anchor="middle" font-size="12" fill="#092235">Size of firm (million dollars)</text><text transform="translate(18 207.0) rotate(-90)" text-anchor="middle" font-size="12" fill="#092235">Months elapsed</text><circle cx="755.0" cy="50.0" r="5" fill="#fff" stroke="#092235" stroke-width="2"/><text x="767" y="54" font-size="11" fill="#092235">Mutual</text><circle cx="755.0" cy="68.0" r="5" fill="#0a8e82"/><text x="767" y="72" font-size="11" fill="#092235">Stock</text></svg><figcaption>Insurance Innovation: observationer och fitted parallel lines från model (8.33), motsvarande Kutners Figure 8.12.</figcaption></figure>
+<div class="interpret"><div class="label">Tolkning av grafen</div><p>Båda fitted lines lutar nedåt: i dessa data är större firm size förknippad med färre månader tills innovationen antas, alltså snabbare antagande. Linjerna är parallella eftersom modellen antar samma slope för Mutual och Stock.</p><p>Vid samma firm size ligger Stock-linjen ungefär 8.06 månader över Mutual-linjen. Det betyder att Stock-företag enligt modellen i genomsnitt tar längre tid på sig. De enskilda punkterna varierar runt linjerna, men mönstret stämmer med 95-procentigt konfidensintervall för skillnaden, cirka 4.98–11.13 månader.</p></div>
+<details><summary>Visa R-koden till Insurance-grafen</summary><pre class="code">plot(MONTHS ~ SIZE, data=insurance,
+     pch=ifelse(TYPE=="Stock", 19, 1),
+     xlab="Size of firm (million dollars)", ylab="Months elapsed")
+xx &lt;- seq(min(insurance$SIZE), max(insurance$SIZE), length.out=100)
+lines(xx, predict(parallel, newdata=data.frame(SIZE=xx,
+      TYPE=factor("Mutual", levels=levels(insurance$TYPE)))))
+lines(xx, predict(parallel, newdata=data.frame(SIZE=xx,
+      TYPE=factor("Stock", levels=levels(insurance$TYPE)))), lty=2)
+legend("topright", legend=c("Mutual", "Stock"), pch=c(1,19), lty=c(1,2))</pre></details>
+<div class="note"><b>Viktigt om coding:</b> en kvalitativ variabel med c klasser representeras med c−1 indicator variables när modellen har intercept. Att ge kategorierna godtyckliga tal som 1 och 2 skapar en numerisk skala som inte behöver ha någon meningsfull tolkning.</div></div>
+<div class="kbox"><strong>Kutner-koppling:</strong> §8.3, (8.32)–(8.34), Table 8.2 och Table 8.3. §8.4 diskuterar varför indicator variables normalt föredras framför arbitrary allocated codes.</div></section>
+
+<section class="lab" id="insurance-int"><div class="dataset-title">Insurance Innovation</div><div class="eyebrow">Steg 7 · Quantitative × qualitative interaction</div><h2>Har Stock och Mutual olika slopes?</h2><p class="purpose">I §8.5 lägger Kutner till SIZE × TYPE. Då får firm type påverka både intercept och slope.</p>
+<div class="formula">Yᵢ = β₀ + β₁SIZEᵢ + β₂STOCKᵢ + β₃(SIZEᵢ·STOCKᵢ) + εᵢ &nbsp; (8.49)</div>
+<div class="code">interaction.model &lt;- lm(MONTHS ~ SIZE * TYPE, data=insurance)
+summary(interaction.model)
+anova(parallel, interaction.model)</div>
+<div class="buttons"><button class="button reveal-btn" data-reveal="ins-int-out">Visa interaction-output</button></div><div id="ins-int-out" class="reveal"><div class="output">&gt; summary(interaction.model)
+
+Residuals:
+     Min       1Q   Median       3Q      Max
+ -5.7144  -1.7064  -0.4557   1.9311   6.3259
+
+Coefficients:
+                 Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)      33.83837    2.44065  13.864 2.47e-10 ***
+SIZE             -0.10153    0.01305  -7.779 7.97e-07 ***
+TYPEStock         8.13125    3.65405   2.225   0.0408 *  
+SIZE:TYPEStock   -0.000417   0.018331 -0.023   0.9821    
+
+Residual standard error: 3.320 on 16 degrees of freedom
+Multiple R-squared: 0.8951, Adjusted R-squared: 0.8754
+F-statistic: 45.49 on 3 and 16 DF, p-value: 4.675e-08
+
+&gt; anova(parallel, interaction.model)
+Analysis of Variance Table
+Model 1: MONTHS ~ SIZE + TYPE
+Model 2: MONTHS ~ SIZE * TYPE
+  Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
+1     17 176.387                           
+2     16 176.381  1  0.00571 0.0005 0.9821</div>
+<div class="interpret"><div class="label">Tolkning</div>Interaction term har p ≈ 0.982. Det finns alltså ingen evidens för att Stock och Mutual har olika slopes. Den enklare modellen med parallella linjer är därför tillräcklig för dessa data.</div></div>
+<div class="formula">Mutual slope = β₁ &nbsp;&nbsp; | &nbsp;&nbsp; Stock slope = β₁ + β₃</div>
+<div class="interpret"><div class="label">Hur ändras koefficienttolkningen vid interaction?</div>När β₃ finns i modellen är β₂ inte längre en konstant skillnad mellan firm types för alla SIZE-värden. Skillnaden mellan typerna beror då på SIZE. Här är β₃ nära 0, så data stödjer i stället den enklare tolkningen med en ungefär konstant vertikal skillnad.</div></div></div>
+<div class="kbox"><strong>Kutner-koppling:</strong> §8.5, (8.49)–(8.50), Table 8.4 och Figures 8.14–8.15. Interaktionstestet för det faktiska datasetet visar inte stöd för olika slopes.</div></section>
+
+<section class="lab" id="summary"><div class="eyebrow">Steg 8 · Samlad arbetsgång</div><h2>Vilken fråga besvarar vilken modellterm?</h2>
+<table><thead><tr><th>Situation</th><th>Term/modell</th><th>Fråga</th><th>Test</th></tr></thead><tbody><tr><td>Curvature med kvantitativ X</td><td>X², X³, ...</td><td>Behöver responsfunktionen mer än first-order?</td><td>t-test eller partial F, hierarkiskt</td></tr><tr><td>Två kvantitativa X samverkar</td><td>X₁X₂</td><td>Beror effekten av X₁ på nivån av X₂?</td><td>t-test eller partial F</td></tr><tr><td>Kvalitativ prediktor</td><td>Indicator variable</td><td>Skiljer sig response functions mellan grupper?</td><td>t-test/partial F</td></tr><tr><td>Kvantitativ × kvalitativ interaction</td><td>X·Indicator</td><td>Har grupperna olika slopes?</td><td>t-test/partial F</td></tr></tbody></table>
+<div class="grid2"><div class="ok"><strong>Power Cells:</strong><br>Second-order modellen passar, men second-order terms behövs inte som grupp. First-order model är tillräcklig inom studerat område.</div><div class="ok"><strong>Body Fat:</strong><br>De tre pairwise interaction terms tillför inte statistiskt tydlig information.</div><div class="ok"><strong>Insurance:</strong><br>Firm type har en tydlig level effect när SIZE hålls konstant.</div><div class="ok"><strong>Insurance interaction:</strong><br>Ingen evidens för olika slopes; parallella linjer räcker.</div></div>
+<div class="note"><b>Tentakoppling:</b> skriv alltid först vilken modell som testas, vilka parametrar som ingår i H₀, och om testet gäller en enskild term eller en grupp termer. Vid interaction måste koefficienter tolkas villkorligt – effekten av en prediktor kan bero på nivån eller klassen hos en annan.</div>
+<div class="kbox"><strong>Kutner-koppling:</strong> sammanfattar §§8.1–8.5.</div></section>
+
+<details><summary>Varför ingår inte Soap Production Lines?</summary><p>Soap Production Lines är ett mycket bra dataset, men det hör till §8.7 <em>Comparison of Two or More Regression Functions</em>. Den här labben är avgränsad till kursens §8.1–§8.5. Det kan läggas som en separat fortsättningsdel om §8.7 ska tas med senare.</p></details>
+</main>
+<footer>STGB33 · Labb 3 · Kapitel 8 · Power Cells, Body Fat och Insurance Innovation · Kutner et al., <em>Applied Linear Statistical Models</em></footer>
+<script>
+document.querySelectorAll('.reveal-btn').forEach(b=>b.addEventListener('click',()=>document.getElementById(b.dataset.reveal).classList.toggle('open')));
+document.getElementById('teacher').addEventListener('click',e=>{document.querySelectorAll('.reveal').forEach(x=>x.classList.add('open'));e.currentTarget.textContent='Lärarläge: all output visas'});
+
+</script>
+</body></html>
